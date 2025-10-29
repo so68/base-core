@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -84,7 +85,7 @@ func (m *MySQLDatabase) HealthCheck() error {
 
 	// 检查连接池状态
 	stats := sqlDB.Stats()
-	m.logger.Debug("MySQL connection pool stats",
+	m.logger.Info("MySQL connection pool stats",
 		slog.Int("open_connections", stats.OpenConnections),
 		slog.Int("in_use", stats.InUse),
 		slog.Int("idle", stats.Idle),
@@ -93,4 +94,14 @@ func (m *MySQLDatabase) HealthCheck() error {
 	)
 
 	return sqlDB.Ping()
+}
+
+// Close 关闭数据库连接
+func (m *MySQLDatabase) Close(ctx context.Context) error {
+	sqlDB, err := m.db.DB()
+	if err != nil {
+		return err
+	}
+	// ctx 暂不用于 gorm 原生 close，可用于未来扩展
+	return sqlDB.Close()
 }

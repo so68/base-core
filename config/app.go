@@ -1,7 +1,7 @@
 package config
 
 import (
-	"strconv"
+	"time"
 
 	"github.com/so68/utils/logger"
 )
@@ -194,13 +194,18 @@ func (c *AppConfig) SetDefaults() {
 
 	// 如果是不是Debug模式
 	if !c.Debug {
-		c.Logger.Level = logger.LevelWarn
+		c.Logger.Level = logger.LevelInfo
 		c.Database.LogLevel = "warn"
 		c.Cors.MaxAge = 86400 // 24 hours
 	}
 }
 
-// GetAddress 获取服务监听地址
-func (c *AppConfig) GetAddress() string {
-	return c.Host + ":" + strconv.Itoa(c.Port)
+// ParseDuration 解析时间
+func (c *AppConfig) ParseDuration(value string) time.Duration {
+	duration, err := time.ParseDuration(value)
+	if err != nil {
+		// 默认5秒
+		return 5 * time.Second
+	}
+	return duration
 }

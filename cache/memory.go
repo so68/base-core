@@ -35,6 +35,11 @@ func NewMemoryCache(cfg *config.CacheConfig, logger *slog.Logger) (*MemoryCache,
 	// 启动清理协程
 	go cache.cleanup()
 
+	logger.Info("Memory cache connected successfully",
+		slog.Int("max_memory", int(cfg.MaxMemory)),
+		slog.Duration("cleanup_interval", cfg.CleanupInterval),
+	)
+
 	return cache, nil
 }
 
@@ -683,6 +688,7 @@ func (m *MemoryCache) SIsMember(ctx context.Context, key string, member interfac
 // HealthCheck 健康检查
 func (m *MemoryCache) HealthCheck(ctx context.Context) error {
 	// 内存缓存总是健康的
+	m.logger.Info("Memory cache healthy")
 	return nil
 }
 

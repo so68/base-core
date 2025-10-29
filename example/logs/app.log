@@ -1,0 +1,3 @@
+{"time":"2025-10-29T18:08:26.430082+08:00","level":"INFO","msg":"MySQL database connected successfully","host":"localhost","port":3306,"database":"base","max_open_conns":100,"max_idle_conns":10}
+{"time":"2025-10-29T18:08:26.431672+08:00","level":"INFO","msg":"Redis cache connected successfully","host":"localhost","port":6379,"database":"0"}
+{"time":"2025-10-29T18:08:26.431722+08:00","level":"INFO","msg":"Server started","addr":"0.0.0.0:8000"}

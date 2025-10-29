@@ -44,6 +44,12 @@ func NewRedisCache(cfg *config.CacheConfig, logger *slog.Logger) (*RedisCache, e
 		return nil, fmt.Errorf("failed to connect to redis: %w", err)
 	}
 
+	logger.Info("Redis cache connected successfully",
+		slog.String("host", cfg.Host),
+		slog.Int("port", cfg.Port),
+		slog.String("database", strconv.Itoa(cfg.Database)),
+	)
+
 	return &RedisCache{
 		client: rdb,
 		config: cfg,
@@ -413,6 +419,14 @@ func (r *RedisCache) HealthCheck(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("redis health check failed: %w", err)
 	}
+
+	// 检查连接池状态
+	stats := r.client.PoolStats()
+	r.logger.Info("Redis connection pool stats",
+		slog.Int("total_conns", int(stats.TotalConns)),
+		slog.Int("idle_conns", int(stats.IdleConns)),
+	)
+
 	return nil
 }
 

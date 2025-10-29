@@ -9,7 +9,7 @@ readTimeout: "30s"
 writeTimeout: "30s"
 idleTimeout: "60s"
 maxHeader: 1048576  # 1MB
-debug: true
+debug: false
 
 # CORS 跨域配置
 cors:
@@ -82,8 +82,8 @@ database:
   host: "localhost"
   port: 3306
   username: "root"
-  password: ""
-  database: "test"
+  password: "Aa123098.."
+  database: "base"
   charset: "utf8mb4"
   timezone: "Local"
   sslMode: "disable"  # PostgreSQL SSL模式

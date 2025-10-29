@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -94,4 +95,14 @@ func (p *PostgreSQLDatabase) HealthCheck() error {
 	)
 
 	return sqlDB.Ping()
+}
+
+// Close 关闭数据库连接
+func (p *PostgreSQLDatabase) Close(ctx context.Context) error {
+	sqlDB, err := p.db.DB()
+	if err != nil {
+		return err
+	}
+	// ctx 暂不用于 gorm 原生 close，可用于未来扩展
+	return sqlDB.Close()
 }

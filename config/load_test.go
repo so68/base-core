@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -744,7 +745,7 @@ func TestAppConfigGetAddress(t *testing.T) {
 		Port: 8080,
 	}
 
-	address := cfg.GetAddress()
+	address := fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)
 	expected := "127.0.0.1:8080"
 	if address != expected {
 		t.Errorf("期望地址为 '%s'，实际为 '%s'", expected, address)

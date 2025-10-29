@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"time"
 
 	"gorm.io/gorm"
@@ -13,6 +14,9 @@ type Database interface {
 
 	// 健康检查
 	HealthCheck() error
+
+	// 连接管理
+	Close(ctx context.Context) error
 }
 
 // BaseModel 基础模型
