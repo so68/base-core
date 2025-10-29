@@ -16,22 +16,22 @@ type CacheConfig struct {
 	Prefix   string `yaml:"prefix" json:"prefix"`     // 键前缀
 
 	// 连接池配置
-	MaxRetries      int           `yaml:"max_retries" json:"max_retries"`             // 最大重试次数
-	MinRetryBackoff time.Duration `yaml:"min_retry_backoff" json:"min_retry_backoff"` // 最小重试间隔
-	MaxRetryBackoff time.Duration `yaml:"max_retry_backoff" json:"max_retry_backoff"` // 最大重试间隔
-	DialTimeout     time.Duration `yaml:"dial_timeout" json:"dial_timeout"`           // 连接超时
-	ReadTimeout     time.Duration `yaml:"read_timeout" json:"read_timeout"`           // 读取超时
-	WriteTimeout    time.Duration `yaml:"write_timeout" json:"write_timeout"`         // 写入超时
-	PoolSize        int           `yaml:"pool_size" json:"pool_size"`                 // 连接池大小
-	MinIdleConns    int           `yaml:"min_idle_conns" json:"min_idle_conns"`       // 最小空闲连接数
-	MaxConnAge      time.Duration `yaml:"max_conn_age" json:"max_conn_age"`           // 连接最大生存时间
-	PoolTimeout     time.Duration `yaml:"pool_timeout" json:"pool_timeout"`           // 连接池超时
-	IdleTimeout     time.Duration `yaml:"idle_timeout" json:"idle_timeout"`           // 空闲超时
-	IdleCheckFreq   time.Duration `yaml:"idle_check_freq" json:"idle_check_freq"`     // 空闲检查频率
+	MaxRetries      int           `yaml:"maxRetries" json:"max_retries"`            // 最大重试次数
+	MinRetryBackoff time.Duration `yaml:"minRetryBackoff" json:"min_retry_backoff"` // 最小重试间隔
+	MaxRetryBackoff time.Duration `yaml:"maxRetryBackoff" json:"max_retry_backoff"` // 最大重试间隔
+	DialTimeout     time.Duration `yaml:"dialTimeout" json:"dial_timeout"`          // 连接超时
+	ReadTimeout     time.Duration `yaml:"readTimeout" json:"read_timeout"`          // 读取超时
+	WriteTimeout    time.Duration `yaml:"writeTimeout" json:"write_timeout"`        // 写入超时
+	PoolSize        int           `yaml:"poolSize" json:"pool_size"`                // 连接池大小
+	MinIdleConns    int           `yaml:"minIdleConns" json:"min_idle_conns"`       // 最小空闲连接数
+	MaxConnAge      time.Duration `yaml:"maxConnAge" json:"max_conn_age"`           // 连接最大生存时间
+	PoolTimeout     time.Duration `yaml:"poolTimeout" json:"pool_timeout"`          // 连接池超时
+	IdleTimeout     time.Duration `yaml:"idleTimeout" json:"idle_timeout"`          // 空闲超时
+	IdleCheckFreq   time.Duration `yaml:"idleCheckFreq" json:"idle_check_freq"`     // 空闲检查频率
 
 	// 内存缓存配置
-	MaxMemory       int64         `yaml:"max_memory" json:"max_memory"`             // 最大内存使用量（字节）
-	CleanupInterval time.Duration `yaml:"cleanup_interval" json:"cleanup_interval"` // 清理间隔
+	MaxMemory       int64         `yaml:"maxMemory" json:"max_memory"`             // 最大内存使用量（字节）
+	CleanupInterval time.Duration `yaml:"cleanupInterval" json:"cleanup_interval"` // 清理间隔
 }
 
 // DefaultCacheConfig 返回默认缓存配置

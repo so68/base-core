@@ -11,54 +11,54 @@ type AppConfig struct {
 	Name         string `yaml:"name" json:"name"`   // 应用名称
 	Host         string `yaml:"host" json:"host"`   // 服务主机
 	Port         int    `yaml:"port" json:"port"`   // 服务端口
-	ReadTimeout  string `yaml:"read_timeout"`       // 读取超时时间
-	WriteTimeout string `yaml:"write_timeout"`      // 写入超时时间
-	IdleTimeout  string `yaml:"idle_timeout"`       // 空闲超时时间
-	MaxHeader    int    `yaml:"max_header"`         // 最大请求头大小(bytes)
+	ReadTimeout  string `yaml:"readTimeout"`        // 读取超时时间
+	WriteTimeout string `yaml:"writeTimeout"`       // 写入超时时间
+	IdleTimeout  string `yaml:"idleTimeout"`        // 空闲超时时间
+	MaxHeader    int    `yaml:"maxHeader"`          // 最大请求头大小(bytes)
 	Debug        bool   `yaml:"debug" json:"debug"` // 是否开启调试模式
 
 	// Cors配置
-	Cors CorsConfig `yaml:"cors"`
+	Cors *CorsConfig `yaml:"cors"`
 
 	// 限流配置
-	RateLimit RateLimitConfig `yaml:"rate_limit"`
+	RateLimit *RateLimitConfig `yaml:"rateLimit"`
 
 	// JWT配置
-	JWT JWTConfig `yaml:"jwt"`
+	JWT *JWTConfig `yaml:"jwt"`
 
 	// 日志配置
-	Logger logger.Config `yaml:"logger"`
+	Logger *logger.Config `yaml:"logger"`
 
 	// 缓存配置
-	Cache CacheConfig `yaml:"cache"`
+	Cache *CacheConfig `yaml:"cache"`
 
 	// 数据库配置
-	Database DatabaseConfig `yaml:"database"`
+	Database *DatabaseConfig `yaml:"database"`
 }
 
 // CorsConfig Cors配置
 type CorsConfig struct {
-	AllowOrigins     string `yaml:"allow_origins"`     // 允许的跨域请求源
-	AllowMethods     string `yaml:"allow_methods"`     // 允许的请求方法
-	AllowHeaders     string `yaml:"allow_headers"`     // 允许的请求头
-	AllowCredentials bool   `yaml:"allow_credentials"` // 是否允许携带凭证
-	MaxAge           int    `yaml:"max_age"`           // 预检请求的缓存时间
+	AllowOrigins     string `yaml:"allowOrigins"`     // 允许的跨域请求源
+	AllowMethods     string `yaml:"allowMethods"`     // 允许的请求方法
+	AllowHeaders     string `yaml:"allowHeaders"`     // 允许的请求头
+	AllowCredentials bool   `yaml:"allowCredentials"` // 是否允许携带凭证
+	MaxAge           int    `yaml:"maxAge"`           // 预检请求的缓存时间
 }
 
 // JWTConfig JWT配置
 type JWTConfig struct {
-	ExpiresIn  int    `yaml:"expires_in"`  // JWT 过期时间(秒)
-	SecretKey  string `yaml:"secret_key"`  // JWT 密钥
-	HeaderName string `yaml:"header_name"` // JWT 头部名称
-	Scheme     string `yaml:"scheme"`      // JWT 方案
+	ExpiresIn  int    `yaml:"expiresIn"`  // JWT 过期时间(秒)
+	SecretKey  string `yaml:"secretKey"`  // JWT 密钥
+	HeaderName string `yaml:"headerName"` // JWT 头部名称
+	Scheme     string `yaml:"scheme"`     // JWT 方案
 }
 
 // RateLimitConfig 限流配置
 type RateLimitConfig struct {
-	Rate         int      `yaml:"rate"`          // 每秒请求数限制
-	Burst        int      `yaml:"burst"`         // 突发请求数限制
-	IncludePaths []string `yaml:"include_paths"` // 包含限流的路径
-	ExcludePaths []string `yaml:"exclude_paths"` // 排除限流的路径
+	Rate         int      `yaml:"rate"`         // 每秒请求数限制
+	Burst        int      `yaml:"burst"`        // 突发请求数限制
+	IncludePaths []string `yaml:"includePaths"` // 包含限流的路径
+	ExcludePaths []string `yaml:"excludePaths"` // 排除限流的路径
 }
 
 // DefaultAppConfig 返回默认应用配置
@@ -67,13 +67,13 @@ func DefaultAppConfig() *AppConfig {
 		Name:         "Taozijun Network Technology Co., Ltd.",
 		Debug:        true,
 		Host:         "0.0.0.0",
-		Port:         8080,
+		Port:         8000,
 		ReadTimeout:  "30s",
 		WriteTimeout: "30s",
 		IdleTimeout:  "60s",
 		MaxHeader:    1 << 20, // 1MB
 
-		Cors: CorsConfig{
+		Cors: &CorsConfig{
 			AllowOrigins:     "*",
 			AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 			AllowHeaders:     "Authorization",
@@ -81,15 +81,21 @@ func DefaultAppConfig() *AppConfig {
 			MaxAge:           600, // 10 minutes
 		},
 
-		JWT: JWTConfig{
+		JWT: &JWTConfig{
 			ExpiresIn:  3600, // 1 hour
-			SecretKey:  "your-secret-key-change-in-production",
+			SecretKey:  "test-secret",
 			HeaderName: "Authorization",
 			Scheme:     "Bearer",
 		},
-		Logger:   *logger.DefaultConfig(),
-		Cache:    *DefaultCacheConfig(),
-		Database: *DefaultDatabaseConfig(),
+		RateLimit: &RateLimitConfig{
+			Rate:         100,
+			Burst:        200,
+			IncludePaths: []string{},
+			ExcludePaths: []string{},
+		},
+		Logger:   logger.DefaultConfig(),
+		Cache:    DefaultCacheConfig(),
+		Database: DefaultDatabaseConfig(),
 	}
 }
 
@@ -119,6 +125,9 @@ func (c *AppConfig) SetDefaults() {
 	}
 
 	// Cors 配置
+	if c.Cors == nil {
+		c.Cors = &CorsConfig{}
+	}
 	if c.Cors.AllowOrigins == "" {
 		c.Cors.AllowOrigins = "*"
 	}
@@ -133,6 +142,9 @@ func (c *AppConfig) SetDefaults() {
 	}
 
 	// JWT 配置
+	if c.JWT == nil {
+		c.JWT = &JWTConfig{}
+	}
 	if c.JWT.ExpiresIn == 0 {
 		c.JWT.ExpiresIn = 3600 // 1 hour
 	}
@@ -147,6 +159,9 @@ func (c *AppConfig) SetDefaults() {
 	}
 
 	// RateLimit
+	if c.RateLimit == nil {
+		c.RateLimit = &RateLimitConfig{}
+	}
 	if c.RateLimit.Rate == 0 {
 		c.RateLimit.Rate = 100
 	}
@@ -161,8 +176,21 @@ func (c *AppConfig) SetDefaults() {
 	}
 
 	// 子配置默认值
-	c.Cache.SetDefaults()
-	c.Database.SetDefaults()
+	if c.Cache != nil {
+		c.Cache.SetDefaults()
+	} else {
+		c.Cache = DefaultCacheConfig()
+	}
+	if c.Database != nil {
+		c.Database.SetDefaults()
+	} else {
+		c.Database = DefaultDatabaseConfig()
+	}
+	if c.Logger != nil {
+		c.Logger.SetDefaults()
+	} else {
+		c.Logger = logger.DefaultConfig()
+	}
 
 	// 如果是不是Debug模式
 	if !c.Debug {

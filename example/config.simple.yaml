@@ -1,0 +1,45 @@
+# 简化版应用配置文件
+# 只包含必要的配置项
+
+# 应用基础配置
+name: "My Application"
+host: "0.0.0.0"
+port: 8080
+debug: true
+
+# CORS 跨域配置
+cors:
+  allowOrigins: "*"
+  allowMethods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowHeaders: "Authorization,Content-Type"
+
+# JWT 配置
+jwt:
+  expiresIn: 3600
+  secretKey: "your-secret-key-change-in-production"
+  headerName: "Authorization"
+  scheme: "Bearer"
+
+# 日志配置
+logger:
+  level: "info"
+  output: "both"
+  file:
+    path: "logs/app.log"
+
+# 缓存配置
+cache:
+  driver: "redis"
+  host: "localhost"
+  port: 6379
+  database: 0
+
+# 数据库配置
+database:
+  driver: "mysql"
+  host: "localhost"
+  port: 3306
+  username: "root"
+  password: ""
+  database: "myapp"
+  charset: "utf8mb4"
