@@ -5,6 +5,7 @@
 name: "Taozijun Network Technology Co., Ltd."
 host: "0.0.0.0"
 port: 8000
+static: "static"  # 静态文件目录（例如：static 或 public）
 readTimeout: "30s"
 writeTimeout: "30s"
 idleTimeout: "60s"
@@ -13,9 +14,10 @@ debug: false
 
 # CORS 跨域配置
 cors:
-  allowOrigins: "*"
-  allowMethods: "GET,POST,PUT,PATCH,DELETE,OPTIONS"
-  allowHeaders: "Authorization"
+  allowOrigins: ["*"]
+  allowMethods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"]
+  allowHeaders: ["Authorization","Content-Type"]
+  exposeHeaders: []
   allowCredentials: false
   maxAge: 600  # 10 minutes
 
@@ -28,8 +30,8 @@ jwt:
 
 # 限流配置
 rateLimit:
-  rate: 100  # 每秒请求数限制
-  burst: 200  # 突发请求数限制
+  rate: 1  # 每秒请求数限制
+  burst: 2  # 突发请求数限制
   includePaths: []  # 包含限流的路径
   excludePaths: []  # 排除限流的路径
 

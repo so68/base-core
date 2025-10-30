@@ -8,10 +8,11 @@ import (
 
 // AppConfig 应用基础配置
 type AppConfig struct {
-	Name  string `yaml:"name"`  // 应用名称
-	Host  string `yaml:"host"`  // 服务主机
-	Port  int    `yaml:"port"`  // 服务端口
-	Debug bool   `yaml:"debug"` // 是否开启调试模式
+	Name   string `yaml:"name"`   // 应用名称
+	Host   string `yaml:"host"`   // 服务主机
+	Port   int    `yaml:"port"`   // 服务端口
+	Debug  bool   `yaml:"debug"`  // 是否开启调试模式
+	Static string `yaml:"static"` // 静态文件目录（例如：static 或 public）
 
 	// 超时配置
 	ReadTimeout  string `yaml:"readTimeout"`  // 读取超时时间
@@ -40,11 +41,12 @@ type AppConfig struct {
 
 // CorsConfig Cors配置
 type CorsConfig struct {
-	AllowOrigins     string `yaml:"allowOrigins"`     // 允许的跨域请求源
-	AllowMethods     string `yaml:"allowMethods"`     // 允许的请求方法
-	AllowHeaders     string `yaml:"allowHeaders"`     // 允许的请求头
-	AllowCredentials bool   `yaml:"allowCredentials"` // 是否允许携带凭证
-	MaxAge           int    `yaml:"maxAge"`           // 预检请求的缓存时间
+	AllowOrigins     []string `yaml:"allowOrigins"`     // 允许的跨域请求源
+	AllowMethods     []string `yaml:"allowMethods"`     // 允许的请求方法
+	AllowHeaders     []string `yaml:"allowHeaders"`     // 允许的请求头
+	ExposeHeaders    []string `yaml:"expose_headers"`   // 暴露的响应头
+	AllowCredentials bool     `yaml:"allowCredentials"` // 是否允许携带凭证
+	MaxAge           int      `yaml:"maxAge"`           // 预检请求的缓存时间
 }
 
 // JWTConfig JWT配置
@@ -70,15 +72,16 @@ func DefaultAppConfig() *AppConfig {
 		Debug:        true,
 		Host:         "0.0.0.0",
 		Port:         8000,
+		Static:       "static",
 		ReadTimeout:  "30s",
 		WriteTimeout: "30s",
 		IdleTimeout:  "60s",
 		MaxHeader:    1 << 20, // 1MB
 
 		Cors: &CorsConfig{
-			AllowOrigins:     "*",
-			AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-			AllowHeaders:     "Authorization",
+			AllowOrigins:     []string{"*"},
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Authorization", "Content-Type"},
 			AllowCredentials: false,
 			MaxAge:           600, // 10 minutes
 		},
@@ -113,6 +116,9 @@ func (c *AppConfig) SetDefaults() {
 	if c.Port == 0 {
 		c.Port = 8080
 	}
+	if c.Static == "" {
+		c.Static = "static"
+	}
 	if c.ReadTimeout == "" {
 		c.ReadTimeout = "30s"
 	}
@@ -130,14 +136,14 @@ func (c *AppConfig) SetDefaults() {
 	if c.Cors == nil {
 		c.Cors = &CorsConfig{}
 	}
-	if c.Cors.AllowOrigins == "" {
-		c.Cors.AllowOrigins = "*"
+	if len(c.Cors.AllowOrigins) == 0 {
+		c.Cors.AllowOrigins = []string{"*"}
 	}
-	if c.Cors.AllowMethods == "" {
-		c.Cors.AllowMethods = "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+	if len(c.Cors.AllowMethods) == 0 {
+		c.Cors.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
 	}
-	if c.Cors.AllowHeaders == "" {
-		c.Cors.AllowHeaders = "Authorization"
+	if len(c.Cors.AllowHeaders) == 0 {
+		c.Cors.AllowHeaders = []string{"Authorization", "Content-Type"}
 	}
 	if c.Cors.MaxAge == 0 {
 		c.Cors.MaxAge = 600 // 10 minutes

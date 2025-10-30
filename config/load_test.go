@@ -120,9 +120,9 @@ write_timeout: "30s"
 idle_timeout: "60s"
 max_header: 1048576
 cors:
-  allow_origins: "*"
-  allow_methods: "GET,POST,PUT,DELETE"
-  allow_headers: "Content-Type,Authorization"
+  allow_origins: ["*"]
+  allow_methods: ["GET","POST","PUT","DELETE"]
+  allow_headers: ["Content-Type","Authorization"]
   allow_credentials: true
   max_age: 3600
 jwt:
@@ -768,7 +768,7 @@ host: "127.0.0.1"
 port: 8080
 debug: true
 cors:
-  allow_origins: "*"
+  allow_origins: ["*"]
 jwt:
   secret_key: "test-secret"
   expires_in: 3600
@@ -897,14 +897,14 @@ func TestDefaultAppConfig(t *testing.T) {
 		t.Errorf("默认数据库配置不应为空")
 	}
 
-	// 检查CORS默认值
-	if cfg.Cors.AllowOrigins == "" {
+	// 检查CORS默认值（数组版本）
+	if len(cfg.Cors.AllowOrigins) == 0 {
 		t.Errorf("默认CORS允许源不应为空")
 	}
-	if cfg.Cors.AllowMethods == "" {
+	if len(cfg.Cors.AllowMethods) == 0 {
 		t.Errorf("默认CORS允许方法不应为空")
 	}
-	if cfg.Cors.AllowHeaders == "" {
+	if len(cfg.Cors.AllowHeaders) == 0 {
 		t.Errorf("默认CORS允许头不应为空")
 	}
 	if cfg.Cors.MaxAge == 0 {

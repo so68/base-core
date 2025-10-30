@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/so68/core/config"
+	"github.com/so68/core/server/middleware"
 )
 
 // ginServer 实现 Server 接口的最小功能版
@@ -25,7 +26,30 @@ func NewServer(logger *slog.Logger, cfg *config.AppConfig) Server {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	engine := gin.New()
+
+	// 使用gin.Logger()中间件来记录请求日志 - 只在Debug模式下记录请求日志
+	if cfg.Debug {
+		engine.Use(gin.Logger())
+	}
+
+	// 使用gin.Recovery()中间件来恢复panic
 	engine.Use(gin.Recovery())
+
+	// 基于 x/time/rate 的按 IP 限流（按配置启用）
+	if cfg.RateLimit != nil && cfg.RateLimit.Rate > 0 {
+		engine.Use(middleware.NewIPRateLimitMiddleware(cfg))
+	}
+
+	// CORS 中间件
+	engine.Use(middleware.NewCORSMiddleware(cfg))
+
+	// 测试路由
+	engine.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, "Welcome to the "+cfg.Name)
+	})
+
+	// 静态文件路由
+	engine.Static(cfg.Static, cfg.Static)
 	return &ginServer{logger: logger, engine: engine, cfg: cfg}
 }
 
@@ -77,9 +101,4 @@ func (s *ginServer) Shutdown(ctx context.Context) error {
 		return nil
 	}
 	return s.httpServer.Shutdown(ctx)
-}
-
-// Static 提供静态文件目录
-func (s *ginServer) Static(relativePath, root string) {
-	s.engine.Static(relativePath, root)
 }

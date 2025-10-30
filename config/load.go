@@ -196,6 +196,9 @@ func overrideFromEnv(config *AppConfig) {
 	if val := os.Getenv("APP_DEBUG"); val != "" {
 		config.Debug = val == "true" || val == "1"
 	}
+	if val := os.Getenv("APP_STATIC"); val != "" {
+		config.Static = val
+	}
 	if val := os.Getenv("APP_READ_TIMEOUT"); val != "" {
 		config.ReadTimeout = val
 	}
@@ -334,6 +337,7 @@ func SaveConfig(config *AppConfig, filePath string) error {
 	v.Set("host", config.Host)
 	v.Set("port", config.Port)
 	v.Set("debug", config.Debug)
+	v.Set("static", config.Static)
 	v.Set("read_timeout", config.ReadTimeout)
 	v.Set("write_timeout", config.WriteTimeout)
 	v.Set("idle_timeout", config.IdleTimeout)
