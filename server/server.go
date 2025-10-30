@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -28,8 +29,8 @@ func NewServer(logger *slog.Logger, cfg *config.AppConfig) Server {
 	return &ginServer{logger: logger, engine: engine, cfg: cfg}
 }
 
-// Start 启动 HTTP 服务（阻塞直到关闭）
-func (s *ginServer) Start() error {
+// buildHTTPServer 构建 http.Server（不启动）
+func (s *ginServer) buildHTTPServer() *http.Server {
 	server := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", s.cfg.Host, s.cfg.Port),
 		Handler: s.engine,
@@ -41,8 +42,33 @@ func (s *ginServer) Start() error {
 		MaxHeaderBytes: s.cfg.MaxHeader,
 	}
 	s.httpServer = server
+	return server
+}
+
+// Start 启动 HTTP 服务（阻塞直到关闭）
+func (s *ginServer) Start() error {
+	if s.httpServer == nil {
+		s.buildHTTPServer()
+	}
 	s.logger.Info("Server started", slog.String("addr", fmt.Sprintf("%s:%d", s.cfg.Host, s.cfg.Port)))
-	return server.ListenAndServe()
+	if err := s.httpServer.ListenAndServe(); err != nil {
+		if errors.Is(err, http.ErrServerClosed) {
+			return nil
+		}
+		return err
+	}
+	return nil
+}
+
+// StartAsync 非阻塞启动，返回错误通道
+func (s *ginServer) StartAsync() <-chan error {
+	ch := make(chan error, 1)
+	go func() {
+		err := s.Start()
+		ch <- err
+		close(ch)
+	}()
+	return ch
 }
 
 // Shutdown 优雅关闭 HTTP 服务

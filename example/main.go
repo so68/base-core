@@ -22,13 +22,24 @@ func main() {
 		_ = app.Close(ctx)
 	}()
 
-	app.Logger.Info("App Core started")
-
-	// 健康检查示例
+	// 健康检查示例（非严格）
 	_ = app.Health(context.Background())
 
-	// 等待优雅退出
+	// 通过上下文驱动运行与优雅退出
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// 捕获信号
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	<-ch
+	go func() {
+		<-ch
+		cancel()
+	}()
+
+	app.Logger.Info("App Core starting")
+	if err := app.Run(ctx); err != nil {
+		// http.ErrServerClosed 已在内部视为正常，无需特殊处理
+		app.Logger.Error("app stopped with error", "error", err)
+	}
 }

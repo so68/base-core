@@ -7,27 +7,27 @@ import (
 
 // DatabaseConfig 数据库配置
 type DatabaseConfig struct {
-	Driver   string `yaml:"driver" json:"driver"`     // 数据库驱动: mysql, postgres
-	Host     string `yaml:"host" json:"host"`         // 数据库主机
-	Port     int    `yaml:"port" json:"port"`         // 数据库端口
-	Username string `yaml:"username" json:"username"` // 用户名
-	Password string `yaml:"password" json:"password"` // 密码
-	Database string `yaml:"database" json:"database"` // 数据库名
-	Charset  string `yaml:"charset" json:"charset"`   // 字符集
-	Timezone string `yaml:"timezone" json:"timezone"` // 时区
-	SSLMode  string `yaml:"sslMode" json:"ssl_mode"`  // SSL模式 (postgres)
+	Driver   string `yaml:"driver"`   // 数据库驱动: mysql, postgres
+	Host     string `yaml:"host"`     // 数据库主机
+	Port     int    `yaml:"port"`     // 数据库端口
+	Username string `yaml:"username"` // 用户名
+	Password string `yaml:"password"` // 密码
+	Database string `yaml:"database"` // 数据库名
+	Charset  string `yaml:"charset"`  // 字符集
+	Timezone string `yaml:"timezone"` // 时区
+	SSLMode  string `yaml:"sslMode"`  // SSL模式 (postgres)
 
 	// 连接池配置
-	MaxOpenConns    int           `yaml:"maxOpenConns" json:"max_open_conns"`        // 最大打开连接数
-	MaxIdleConns    int           `yaml:"maxIdleConns" json:"max_idle_conns"`        // 最大空闲连接数
-	ConnMaxLifetime time.Duration `yaml:"connMaxLifetime" json:"conn_max_lifetime"`  // 连接最大生存时间
-	ConnMaxIdleTime time.Duration `yaml:"connMaxIdleTime" json:"conn_max_idle_time"` // 连接最大空闲时间
+	MaxOpenConns    int           `yaml:"maxOpenConns"`    // 最大打开连接数
+	MaxIdleConns    int           `yaml:"maxIdleConns"`    // 最大空闲连接数
+	ConnMaxLifetime time.Duration `yaml:"connMaxLifetime"` // 连接最大生存时间
+	ConnMaxIdleTime time.Duration `yaml:"connMaxIdleTime"` // 连接最大空闲时间
 
 	// GORM 配置
-	LogLevel                                 string        `yaml:"logLevel" json:"log_level"`                                                                     // 日志级别: silent, error, warn, info
-	SlowThreshold                            time.Duration `yaml:"slowThreshold" json:"slow_threshold"`                                                           // 慢查询阈值
-	PrepareStmt                              bool          `yaml:"prepareStmt" json:"prepare_stmt"`                                                               // 是否预编译语句
-	DisableForeignKeyConstraintWhenMigrating bool          `yaml:"disableForeignKeyConstraintWhenMigrating" json:"disable_foreign_key_constraint_when_migrating"` // 迁移时是否禁用外键约束
+	LogLevel                                 string        `yaml:"logLevel"`                                 // 日志级别: silent, error, warn, info
+	SlowThreshold                            time.Duration `yaml:"slowThreshold"`                            // 慢查询阈值
+	PrepareStmt                              bool          `yaml:"prepareStmt"`                              // 是否预编译语句
+	DisableForeignKeyConstraintWhenMigrating bool          `yaml:"disableForeignKeyConstraintWhenMigrating"` // 迁移时是否禁用外键约束
 }
 
 // DefaultDatabaseConfig 返回默认数据库配置

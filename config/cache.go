@@ -6,32 +6,32 @@ import (
 
 // CacheConfig 缓存配置
 type CacheConfig struct {
-	Driver string `yaml:"driver" json:"driver"` // 缓存驱动: redis, memory
+	Driver string `yaml:"driver"` // 缓存驱动: redis, memory
 
 	// Redis 配置
-	Host     string `yaml:"host" json:"host"`         // Redis 主机
-	Port     int    `yaml:"port" json:"port"`         // Redis 端口
-	Password string `yaml:"password" json:"password"` // Redis 密码
-	Database int    `yaml:"database" json:"database"` // Redis 数据库编号
-	Prefix   string `yaml:"prefix" json:"prefix"`     // 键前缀
+	Host     string `yaml:"host"`     // Redis 主机
+	Port     int    `yaml:"port"`     // Redis 端口
+	Password string `yaml:"password"` // Redis 密码
+	Database int    `yaml:"database"` // Redis 数据库编号
+	Prefix   string `yaml:"prefix"`   // 键前缀
 
 	// 连接池配置
-	MaxRetries      int           `yaml:"maxRetries" json:"max_retries"`            // 最大重试次数
-	MinRetryBackoff time.Duration `yaml:"minRetryBackoff" json:"min_retry_backoff"` // 最小重试间隔
-	MaxRetryBackoff time.Duration `yaml:"maxRetryBackoff" json:"max_retry_backoff"` // 最大重试间隔
-	DialTimeout     time.Duration `yaml:"dialTimeout" json:"dial_timeout"`          // 连接超时
-	ReadTimeout     time.Duration `yaml:"readTimeout" json:"read_timeout"`          // 读取超时
-	WriteTimeout    time.Duration `yaml:"writeTimeout" json:"write_timeout"`        // 写入超时
-	PoolSize        int           `yaml:"poolSize" json:"pool_size"`                // 连接池大小
-	MinIdleConns    int           `yaml:"minIdleConns" json:"min_idle_conns"`       // 最小空闲连接数
-	MaxConnAge      time.Duration `yaml:"maxConnAge" json:"max_conn_age"`           // 连接最大生存时间
-	PoolTimeout     time.Duration `yaml:"poolTimeout" json:"pool_timeout"`          // 连接池超时
-	IdleTimeout     time.Duration `yaml:"idleTimeout" json:"idle_timeout"`          // 空闲超时
-	IdleCheckFreq   time.Duration `yaml:"idleCheckFreq" json:"idle_check_freq"`     // 空闲检查频率
+	MaxRetries      int           `yaml:"maxRetries"`      // 最大重试次数
+	MinRetryBackoff time.Duration `yaml:"minRetryBackoff"` // 最小重试间隔
+	MaxRetryBackoff time.Duration `yaml:"maxRetryBackoff"` // 最大重试间隔
+	DialTimeout     time.Duration `yaml:"dialTimeout"`     // 连接超时
+	ReadTimeout     time.Duration `yaml:"readTimeout"`     // 读取超时
+	WriteTimeout    time.Duration `yaml:"writeTimeout"`    // 写入超时
+	PoolSize        int           `yaml:"poolSize"`        // 连接池大小
+	MinIdleConns    int           `yaml:"minIdleConns"`    // 最小空闲连接数
+	MaxConnAge      time.Duration `yaml:"maxConnAge"`      // 连接最大生存时间
+	PoolTimeout     time.Duration `yaml:"poolTimeout"`     // 连接池超时
+	IdleTimeout     time.Duration `yaml:"idleTimeout"`     // 空闲超时
+	IdleCheckFreq   time.Duration `yaml:"idleCheckFreq"`   // 空闲检查频率
 
 	// 内存缓存配置
-	MaxMemory       int64         `yaml:"maxMemory" json:"max_memory"`             // 最大内存使用量（字节）
-	CleanupInterval time.Duration `yaml:"cleanupInterval" json:"cleanup_interval"` // 清理间隔
+	MaxMemory       int64         `yaml:"maxMemory"`       // 最大内存使用量（字节）
+	CleanupInterval time.Duration `yaml:"cleanupInterval"` // 清理间隔
 }
 
 // DefaultCacheConfig 返回默认缓存配置

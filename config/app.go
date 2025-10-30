@@ -8,14 +8,16 @@ import (
 
 // AppConfig 应用基础配置
 type AppConfig struct {
-	Name         string `yaml:"name" json:"name"`   // 应用名称
-	Host         string `yaml:"host" json:"host"`   // 服务主机
-	Port         int    `yaml:"port" json:"port"`   // 服务端口
-	ReadTimeout  string `yaml:"readTimeout"`        // 读取超时时间
-	WriteTimeout string `yaml:"writeTimeout"`       // 写入超时时间
-	IdleTimeout  string `yaml:"idleTimeout"`        // 空闲超时时间
-	MaxHeader    int    `yaml:"maxHeader"`          // 最大请求头大小(bytes)
-	Debug        bool   `yaml:"debug" json:"debug"` // 是否开启调试模式
+	Name  string `yaml:"name"`  // 应用名称
+	Host  string `yaml:"host"`  // 服务主机
+	Port  int    `yaml:"port"`  // 服务端口
+	Debug bool   `yaml:"debug"` // 是否开启调试模式
+
+	// 超时配置
+	ReadTimeout  string `yaml:"readTimeout"`  // 读取超时时间
+	WriteTimeout string `yaml:"writeTimeout"` // 写入超时时间
+	IdleTimeout  string `yaml:"idleTimeout"`  // 空闲超时时间
+	MaxHeader    int    `yaml:"maxHeader"`    // 最大请求头大小(bytes)
 
 	// Cors配置
 	Cors *CorsConfig `yaml:"cors"`

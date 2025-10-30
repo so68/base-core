@@ -2,8 +2,10 @@ package core
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 
 	"github.com/so68/core/cache"
 	"github.com/so68/core/config"
@@ -19,6 +21,8 @@ type Core struct {
 	DB     database.Database // 数据库
 	Cache  cache.Cache       // 缓存
 	Server server.Server     // 服务器
+
+	serverErrChan <-chan error // 服务器错误通道（StartAsync 使用）
 }
 
 // Option 构造可选项
@@ -126,14 +130,10 @@ func NewCoreWithOptions(opts ...Option) (*Core, error) {
 		c = createdCache
 	}
 
-	// 初始化服务器
+	// 初始化服务器（仅构建，不启动）
 	var s server.Server
 	if o.enableServer {
 		s = server.NewServer(slogLogger, cfg)
-		err := s.Start()
-		if err != nil {
-			return nil, fmt.Errorf("start server: %w", err)
-		}
 	}
 
 	return &Core{
@@ -149,19 +149,67 @@ func NewCoreWithOptions(opts ...Option) (*Core, error) {
 func (c *Core) Close(ctx context.Context) error {
 	var firstErr error
 
+	// 先停服务
+	if c.Server != nil {
+		if err := c.Server.Shutdown(ctx); err != nil {
+			firstErr = fmt.Errorf("shutdown server: %w", err)
+		}
+	}
+
 	if c.DB != nil {
-		if err := c.DB.Close(ctx); err != nil && firstErr == nil {
-			firstErr = fmt.Errorf("close db: %w", err)
+		if firstErr == nil {
+			if err := c.DB.Close(ctx); err != nil {
+				firstErr = fmt.Errorf("close db: %w", err)
+			}
 		}
 	}
 
 	if c.Cache != nil {
-		if err := c.Cache.Close(); err != nil && firstErr == nil {
-			firstErr = fmt.Errorf("close cache: %w", err)
+		if firstErr == nil {
+			if err := c.Cache.Close(); err != nil {
+				firstErr = fmt.Errorf("close cache: %w", err)
+			}
 		}
 	}
 
 	return firstErr
+}
+
+// Start 启动核心组件（非阻塞启动 Server）
+func (c *Core) Start(ctx context.Context) error {
+	if c.Server != nil && c.serverErrChan == nil {
+		c.serverErrChan = c.Server.StartAsync()
+	}
+	return nil
+}
+
+// Run 运行直到上下文取消或服务器报错（优雅关闭）
+func (c *Core) Run(ctx context.Context) error {
+	// 确保已启动
+	if err := c.Start(ctx); err != nil {
+		return err
+	}
+
+	if c.Server == nil {
+		// 没有 Server，直接等待 ctx 结束
+		<-ctx.Done()
+		return c.Close(ctx)
+	}
+
+	// 等待退出或错误
+	select {
+	case <-ctx.Done():
+		return c.Close(ctx)
+	case err, ok := <-c.serverErrChan:
+		if !ok {
+			return nil
+		}
+		// http.ErrServerClosed 视为正常退出
+		if errors.Is(err, http.ErrServerClosed) {
+			return nil
+		}
+		return err
+	}
 }
 
 // Health 聚合健康检查
