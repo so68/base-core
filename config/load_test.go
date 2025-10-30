@@ -607,8 +607,8 @@ func TestSaveConfig(t *testing.T) {
 	if cfg.Debug != true {
 		t.Errorf("期望调试模式为 true，实际为 %t", cfg.Debug)
 	}
-	if cfg.JWT.SecretKey != "your-secret-key-change-in-production" {
-		t.Errorf("期望JWT密钥为 'your-secret-key-change-in-production'，实际为 '%s'", cfg.JWT.SecretKey)
+	if cfg.JWT.SecretKey != "not-secret-key" {
+		t.Errorf("期望JWT密钥为 'not-secret-key'，实际为 '%s'", cfg.JWT.SecretKey)
 	}
 	if cfg.Database.Driver != "mysql" {
 		t.Errorf("期望数据库驱动为 'mysql'，实际为 '%s'", cfg.Database.Driver)

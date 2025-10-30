@@ -22,7 +22,7 @@ cors:
 # JWT 配置
 jwt:
   expiresIn: 3600  # 1 hour
-  secretKey: "test-secret-config"
+  secretKey: "2024-8x9y2z1w0v"
   headerName: "Authorization"
   scheme: "Bearer"
 

@@ -50,7 +50,7 @@ func (s *ginServer) Start() error {
 	if s.httpServer == nil {
 		s.buildHTTPServer()
 	}
-	s.logger.Info("Server started", slog.String("addr", fmt.Sprintf("%s:%d", s.cfg.Host, s.cfg.Port)))
+	s.logger.Info("Server started successfully", slog.String("addr", fmt.Sprintf("%s:%d", s.cfg.Host, s.cfg.Port)))
 	if err := s.httpServer.ListenAndServe(); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
 			return nil

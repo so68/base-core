@@ -14,8 +14,8 @@ import (
 	"github.com/so68/utils/logger"
 )
 
-// Core 核心
-type Core struct {
+// Application 应用
+type Application struct {
 	Config *config.AppConfig // 配置
 	Logger *slog.Logger      // 日志
 	DB     database.Database // 数据库
@@ -67,13 +67,13 @@ func WithoutServer() Option {
 	return func(o *coreOptions) { o.enableServer = false }
 }
 
-// NewCore 初始化核心
-func NewCore(configPath string) (*Core, error) {
-	return NewCoreWithOptions(WithConfigPath(configPath))
+// NewApplication 初始化应用
+func NewApplication(configPath string, opts ...Option) (*Application, error) {
+	return NewApplicationWithOptions(append(opts, WithConfigPath(configPath))...)
 }
 
-// NewCoreWithOptions 基于可选项初始化核心
-func NewCoreWithOptions(opts ...Option) (*Core, error) {
+// NewApplicationWithOptions 基于可选项初始化应用
+func NewApplicationWithOptions(opts ...Option) (*Application, error) {
 	// 解析可选项
 	o := &coreOptions{
 		enableDB:     true,
@@ -136,7 +136,7 @@ func NewCoreWithOptions(opts ...Option) (*Core, error) {
 		s = server.NewServer(slogLogger, cfg)
 	}
 
-	return &Core{
+	return &Application{
 		Config: cfg,
 		Logger: slogLogger,
 		DB:     db,
@@ -146,27 +146,27 @@ func NewCoreWithOptions(opts ...Option) (*Core, error) {
 }
 
 // Close 统一释放资源
-func (c *Core) Close(ctx context.Context) error {
+func (a *Application) Close(ctx context.Context) error {
 	var firstErr error
 
 	// 先停服务
-	if c.Server != nil {
-		if err := c.Server.Shutdown(ctx); err != nil {
+	if a.Server != nil {
+		if err := a.Server.Shutdown(ctx); err != nil {
 			firstErr = fmt.Errorf("shutdown server: %w", err)
 		}
 	}
 
-	if c.DB != nil {
+	if a.DB != nil {
 		if firstErr == nil {
-			if err := c.DB.Close(ctx); err != nil {
+			if err := a.DB.Close(ctx); err != nil {
 				firstErr = fmt.Errorf("close db: %w", err)
 			}
 		}
 	}
 
-	if c.Cache != nil {
+	if a.Cache != nil {
 		if firstErr == nil {
-			if err := c.Cache.Close(); err != nil {
+			if err := a.Cache.Close(); err != nil {
 				firstErr = fmt.Errorf("close cache: %w", err)
 			}
 		}
@@ -176,31 +176,31 @@ func (c *Core) Close(ctx context.Context) error {
 }
 
 // Start 启动核心组件（非阻塞启动 Server）
-func (c *Core) Start(ctx context.Context) error {
-	if c.Server != nil && c.serverErrChan == nil {
-		c.serverErrChan = c.Server.StartAsync()
+func (a *Application) Start(ctx context.Context) error {
+	if a.Server != nil && a.serverErrChan == nil {
+		a.serverErrChan = a.Server.StartAsync()
 	}
 	return nil
 }
 
 // Run 运行直到上下文取消或服务器报错（优雅关闭）
-func (c *Core) Run(ctx context.Context) error {
+func (a *Application) Run(ctx context.Context) error {
 	// 确保已启动
-	if err := c.Start(ctx); err != nil {
+	if err := a.Start(ctx); err != nil {
 		return err
 	}
 
-	if c.Server == nil {
+	if a.Server == nil {
 		// 没有 Server，直接等待 ctx 结束
 		<-ctx.Done()
-		return c.Close(ctx)
+		return a.Close(ctx)
 	}
 
 	// 等待退出或错误
 	select {
 	case <-ctx.Done():
-		return c.Close(ctx)
-	case err, ok := <-c.serverErrChan:
+		return a.Close(ctx)
+	case err, ok := <-a.serverErrChan:
 		if !ok {
 			return nil
 		}
@@ -213,22 +213,22 @@ func (c *Core) Run(ctx context.Context) error {
 }
 
 // Health 聚合健康检查
-func (c *Core) Health(ctx context.Context) error {
-	if c.DB != nil {
-		if err := c.DB.HealthCheck(); err != nil {
-			c.Logger.Error("db health check failed", slog.String("component", "db"), slog.Any("error", err))
+func (a *Application) Health(ctx context.Context) error {
+	if a.DB != nil {
+		if err := a.DB.HealthCheck(); err != nil {
+			a.Logger.Error("db health check failed", slog.String("component", "db"), slog.Any("error", err))
 			return fmt.Errorf("db unhealthy: %w", err)
 		}
 	} else {
-		c.Logger.Info("db disabled or not initialized", slog.String("component", "db"))
+		a.Logger.Info("db disabled or not initialized", slog.String("component", "db"))
 	}
-	if c.Cache != nil {
-		if err := c.Cache.HealthCheck(ctx); err != nil {
-			c.Logger.Error("cache health check failed", slog.String("component", "cache"), slog.Any("error", err))
+	if a.Cache != nil {
+		if err := a.Cache.HealthCheck(ctx); err != nil {
+			a.Logger.Error("cache health check failed", slog.String("component", "cache"), slog.Any("error", err))
 			return fmt.Errorf("cache unhealthy: %w", err)
 		}
 	} else {
-		c.Logger.Info("cache disabled or not initialized", slog.String("component", "cache"))
+		a.Logger.Info("cache disabled or not initialized", slog.String("component", "cache"))
 	}
 	return nil
 }

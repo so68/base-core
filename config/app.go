@@ -85,7 +85,7 @@ func DefaultAppConfig() *AppConfig {
 
 		JWT: &JWTConfig{
 			ExpiresIn:  3600, // 1 hour
-			SecretKey:  "test-secret",
+			SecretKey:  "not-secret-key",
 			HeaderName: "Authorization",
 			Scheme:     "Bearer",
 		},
@@ -151,7 +151,7 @@ func (c *AppConfig) SetDefaults() {
 		c.JWT.ExpiresIn = 3600 // 1 hour
 	}
 	if c.JWT.SecretKey == "" {
-		c.JWT.SecretKey = "your-secret-key-change-in-production"
+		c.JWT.SecretKey = "not-secret-key"
 	}
 	if c.JWT.HeaderName == "" {
 		c.JWT.HeaderName = "Authorization"
