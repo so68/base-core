@@ -556,10 +556,9 @@ func TestSaveConfig(t *testing.T) {
 		Port:  8080,
 		Debug: true,
 		JWT: &JWTConfig{
-			SecretKey:  "", // 空密钥，让 SetDefaults 设置默认值
-			ExpiresIn:  3600,
-			HeaderName: "Authorization",
-			Scheme:     "Bearer",
+			SecretKey:    "", // 空密钥，让 SetDefaults 设置默认值
+			EnableSingle: false,
+			ExpiresIn:    3600,
 		},
 		Database: &DatabaseConfig{
 			Driver:   "mysql",
@@ -917,12 +916,6 @@ func TestDefaultAppConfig(t *testing.T) {
 	}
 	if cfg.JWT.ExpiresIn == 0 {
 		t.Errorf("默认JWT过期时间不应为0")
-	}
-	if cfg.JWT.HeaderName == "" {
-		t.Errorf("默认JWT头部名称不应为空")
-	}
-	if cfg.JWT.Scheme == "" {
-		t.Errorf("默认JWT方案不应为空")
 	}
 
 	// 检查限流默认值

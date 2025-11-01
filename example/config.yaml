@@ -9,8 +9,8 @@ static: "static"  # 静态文件目录（例如：static 或 public）
 readTimeout: "30s"
 writeTimeout: "30s"
 idleTimeout: "60s"
-maxHeader: 1048576  # 1MB
-debug: false
+maxHeader: 10485760  # 10MB
+debug: true
 
 # CORS 跨域配置
 cors:
@@ -23,15 +23,14 @@ cors:
 
 # JWT 配置
 jwt:
+  enableSingle: false  # 是否启用单点登录(同一个用户只能在一个设备上登录)
   expiresIn: 3600  # 1 hour
   secretKey: "2024-8x9y2z1w0v"
-  headerName: "Authorization"
-  scheme: "Bearer"
 
 # 限流配置
 rateLimit:
-  rate: 1  # 每秒请求数限制
-  burst: 2  # 突发请求数限制
+  rate: 20  # 每秒请求数限制
+  burst: 40  # 突发请求数限制
   includePaths: []  # 包含限流的路径
   excludePaths: []  # 排除限流的路径
 

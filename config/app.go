@@ -18,7 +18,7 @@ type AppConfig struct {
 	ReadTimeout  string `yaml:"readTimeout"`  // 读取超时时间
 	WriteTimeout string `yaml:"writeTimeout"` // 写入超时时间
 	IdleTimeout  string `yaml:"idleTimeout"`  // 空闲超时时间
-	MaxHeader    int    `yaml:"maxHeader"`    // 最大请求头大小(bytes)
+	MaxHeader    int64  `yaml:"maxHeader"`    // 最大请求头大小(bytes)
 
 	// Cors配置
 	Cors *CorsConfig `yaml:"cors"`
@@ -51,10 +51,9 @@ type CorsConfig struct {
 
 // JWTConfig JWT配置
 type JWTConfig struct {
-	ExpiresIn  int    `yaml:"expiresIn"`  // JWT 过期时间(秒)
-	SecretKey  string `yaml:"secretKey"`  // JWT 密钥
-	HeaderName string `yaml:"headerName"` // JWT 头部名称
-	Scheme     string `yaml:"scheme"`     // JWT 方案
+	EnableSingle bool   `yaml:"enableSingle"` // 是否启用单点登录(同一个用户只能在一个设备上登录)
+	ExpiresIn    int    `yaml:"expiresIn"`    // JWT 过期时间(秒)
+	SecretKey    string `yaml:"secretKey"`    // JWT 密钥
 }
 
 // RateLimitConfig 限流配置
@@ -87,10 +86,8 @@ func DefaultAppConfig() *AppConfig {
 		},
 
 		JWT: &JWTConfig{
-			ExpiresIn:  3600, // 1 hour
-			SecretKey:  "not-secret-key",
-			HeaderName: "Authorization",
-			Scheme:     "Bearer",
+			ExpiresIn: 3600, // 1 hour
+			SecretKey: "not-secret-key",
 		},
 		RateLimit: &RateLimitConfig{
 			Rate:         100,
@@ -158,12 +155,6 @@ func (c *AppConfig) SetDefaults() {
 	}
 	if c.JWT.SecretKey == "" {
 		c.JWT.SecretKey = "not-secret-key"
-	}
-	if c.JWT.HeaderName == "" {
-		c.JWT.HeaderName = "Authorization"
-	}
-	if c.JWT.Scheme == "" {
-		c.JWT.Scheme = "Bearer"
 	}
 
 	// RateLimit

@@ -224,12 +224,6 @@ func overrideFromEnv(config *AppConfig) {
 				// 成功解析过期时间
 			}
 		}
-		if val := os.Getenv("APP_JWT_HEADER_NAME"); val != "" {
-			config.JWT.HeaderName = val
-		}
-		if val := os.Getenv("APP_JWT_SCHEME"); val != "" {
-			config.JWT.Scheme = val
-		}
 	}
 
 	// 数据库配置

@@ -63,7 +63,7 @@ func (s *ginServer) buildHTTPServer() *http.Server {
 		ReadTimeout:    s.cfg.ParseDuration(s.cfg.ReadTimeout),  // 读取整个请求（Header + Body）的超时时间
 		WriteTimeout:   s.cfg.ParseDuration(s.cfg.WriteTimeout), // 写入响应的超时时间
 		IdleTimeout:    s.cfg.ParseDuration(s.cfg.IdleTimeout),  // Keep-Alive 连接的空闲超时时间
-		MaxHeaderBytes: s.cfg.MaxHeader,
+		MaxHeaderBytes: int(s.cfg.MaxHeader),                    // 最大请求头大小(bytes)
 	}
 	s.httpServer = server
 	return server
@@ -101,4 +101,33 @@ func (s *ginServer) Shutdown(ctx context.Context) error {
 		return nil
 	}
 	return s.httpServer.Shutdown(ctx)
+}
+
+// NewGroup 创建一个路由组
+func (s *ginServer) NewGroup(relativePath string) *gin.RouterGroup {
+	return s.engine.Group(relativePath)
+}
+
+// Middleware 添加中间件
+func (s *ginServer) Middleware(group *gin.RouterGroup, middlewares ...gin.HandlerFunc) *gin.RouterGroup {
+	group.Use(middlewares...)
+	return group
+}
+
+// Register 注册路由
+func (s *ginServer) Register(group *gin.RouterGroup, handlers ...RouterHandler) {
+	for _, handler := range handlers {
+		switch handler.Method {
+		case RouterMethodGet:
+			group.GET(handler.Path, handler.Handler)
+		case RouterMethodPost:
+			group.POST(handler.Path, handler.Handler)
+		case RouterMethodPut:
+			group.PUT(handler.Path, handler.Handler)
+		case RouterMethodDelete:
+			group.DELETE(handler.Path, handler.Handler)
+		case RouterMethodPatch:
+			group.PATCH(handler.Path, handler.Handler)
+		}
+	}
 }
